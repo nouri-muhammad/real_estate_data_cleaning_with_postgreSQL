@@ -1,0 +1,13 @@
+-- change Y/Yes and N/No to True and False in "sold as vacant" column
+-- note: This column does not have any NULL values
+SELECT * FROM national_housing;
+
+-- since the data-type was VARCHAR we should change both data-type and value at the same time.
+
+ALTER TABLE national_housing 
+ALTER COLUMN sold_as_vacant 
+	TYPE boolean
+USING CASE 
+		WHEN sold_as_vacant IN ('Y', 'Yes') THEN True 
+		ELSE False 
+	END;

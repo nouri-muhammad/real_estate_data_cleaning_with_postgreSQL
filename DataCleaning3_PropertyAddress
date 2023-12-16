@@ -1,0 +1,34 @@
+-- breaking property_address and owner_address columns into address and city.
+
+-- checking the process of splitting the columns
+SELECT
+	property_address,
+	SUBSTRING(property_address FROM 1 FOR POSITION(',' IN property_address)-1) AS address,
+	RIGHT(property_address, LENGTH(property_address) - POSITION(',' IN property_address)) AS city,
+	owner_address,
+	SUBSTRING(owner_address FROM 1 FOR POSITION(',' IN owner_address)-1) AS address,
+	RIGHT(owner_address, LENGTH(owner_address) - POSITION(',' IN owner_address)-1) AS city
+FROM national_housing;
+
+-- creating new columns to split the property and owner address columns
+ALTER TABLE national_housing
+ADD COLUMN IF NOT EXISTS property_city TEXT,
+ADD COLUMN IF NOT EXISTS owner_city TEXT,
+ADD COLUMN IF NOT EXISTS owner_state TEXT;
+
+-- updating the columns
+UPDATE national_housing
+SET 
+	property_city = RIGHT(property_address, LENGTH(property_address) - POSITION(',' IN property_address)),
+	owner_city = RIGHT(owner_address, LENGTH(owner_address) - POSITION(',' IN owner_address)-1),
+	property_address = SUBSTRING(property_address FROM 1 FOR POSITION(',' IN property_address)-1),
+	owner_address = SUBSTRING(owner_address FROM 1 FOR POSITION(',' IN owner_address)-1);
+
+-- splitting owner_address_city to two columns of owner_address_city and owner_state
+UPDATE national_housing
+SET
+	owner_state = SUBSTRING(owner_city FROM POSITION(',' IN owner_city)+1),
+	owner_city = LEFT(owner_city, POSITION(',' IN owner_city)-1)
+
+
+SELECT * FROM national_housing;

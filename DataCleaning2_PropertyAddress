@@ -1,0 +1,26 @@
+-- There are null values in property_address column which can be filled using parcel_id column
+SELECT * FROM national_housing
+WHERE property_address IS NULL;
+
+-- finding all null values of the specified column and the corresponding value from the same parcel_id.
+SELECT 
+	nh1.id, nh1.parcel_id, nh1.property_address, nh2.id, nh2.property_address
+FROM national_housing nh1
+JOIN national_housing nh2
+	ON (nh1.parcel_id = nh2.parcel_id) AND (nh1.id <> nh2.id)
+WHERE (nh1.property_address IS NULL);
+
+-- updating the table 
+UPDATE
+	national_housing
+SET
+	property_address = COALESCE(national_housing.property_address, nh2.property_address)
+FROM national_housing nh1
+JOIN national_housing nh2
+	ON (nh1.parcel_id = nh2.parcel_id) AND (nh1.id <> nh2.id)
+WHERE (nh1.property_address IS NULL) AND (national_housing.id = nh1.id) AND (nh1.parcel_id = nh2.parcel_id);
+
+/*
+IDs to check the accuracy of update:
+	'025 07 0 031.00', '026 01 0 069.00', '026 05 0 017.00', '026 06 0A 038.00', '033 06 0 041.00', '033 06 0A 002.00', etc.
+*/

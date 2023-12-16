@@ -1,0 +1,21 @@
+CREATE TABLE national_housing(
+	id INT PRIMARY KEY,
+	parcel_id TEXT,
+	land_user VARCHAR(50),
+	property_address TEXT,
+	sale_date DATE,
+	sale_price INT,
+	legal_reference TEXT,
+	sold_as_vacant VARCHAR(3),
+	owner_name TEXT,
+	owner_address TEXT,
+	acreage NUMERIC,
+	tax_district TEXT,
+	land_value INT,
+	building_value INT,
+	total_value INT,
+	year_built INT,
+	bedroom INT,
+	full_bath INT,
+	half_bath INT
+);

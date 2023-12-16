@@ -1,0 +1,32 @@
+-- deleting duplicate values
+
+-- first identifying if there is any duplicate (which is positive with 104 duplicate columns)
+
+SELECT
+	*
+FROM
+(
+	SELECT 
+		COUNT(*) OVER(PARTITION BY parcel_id, property_address, sale_date, sale_price, property_city, legal_reference ORDER BY id) AS row_number,
+		*
+	FROM national_housing
+)
+WHERE row_number > 1;
+
+
+-- deleting duplicates
+DELETE FROM national_housing nh1
+USING
+(
+	SELECT
+		*
+	FROM
+	(
+		SELECT 
+			COUNT(*) OVER(PARTITION BY parcel_id, property_address, sale_date, sale_price, property_city, legal_reference ORDER BY id) AS row_number,
+			*
+		FROM national_housing
+	)
+	WHERE row_number > 1
+) nh2
+WHERE nh1.id = nh2.id
